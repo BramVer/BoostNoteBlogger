@@ -13,6 +13,7 @@ _defaults = {
     "METADATA_EXTENSION": ".yml",
     "METADATA_FOLDER": "meta",
     "BNOTE_SETTINGS_FILE": "boostnote.json",
+    "TAGS_INDICATOR": "tags: \"",
 }
 
 

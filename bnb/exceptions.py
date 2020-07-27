@@ -1,0 +1,2 @@
+class MarkdownBoundsNotFound(Exception):
+    pass
