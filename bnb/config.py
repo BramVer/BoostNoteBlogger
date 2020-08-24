@@ -1,27 +1,43 @@
+import attr
 from smart_getenv import getenv
 
 
+@attr.s
+class ConfigOption:
+    name = attr.ib()
+    default = attr.ib()
+    _type = attr.ib(default=str)
+
+    @property
+    def key(self):
+        return self.name.lower()
+    
+
+    @property
+    def value(self):
+        return getenv(name=self.name, type=self._type, default=self.default)
+
+
 # This is purely used to store the default config options
-_defaults = {
-    "MARKDOWN_START": "content: '''",
-    "MARKDOWN_END": "'''",
-    "TITLE_INDICATOR": "title: \"",
-    "FOLDER_INDICATOR": "folder: \"",
-    "YAML_STRING_INDICATOR": "\"",
-    "CSON_EXTENSION": ".cson",
-    "MARKDOWN_EXTENSION": ".md",
-    "METADATA_EXTENSION": ".yml",
-    "METADATA_FOLDER": "meta",
-    "BNOTE_SETTINGS_FILE": "boostnote.json",
-    "TAGS_INDICATOR": "tags: \"",
-}
+_defaults = (
+    ConfigOption("MARKDOWN_START", "content: '''"),
+    ConfigOption("MARKDOWN_END", "'''"),
+    ConfigOption("TITLE_INDICATOR", "title: \""),
+    ConfigOption("FOLDER_INDICATOR", "folder: \""),
+    ConfigOption("YAML_STRING_INDICATOR", "\""),
+    ConfigOption("CSON_EXTENSION", ".cson"),
+    ConfigOption("MARKDOWN_EXTENSION", ".md"),
+    ConfigOption("METADATA_EXTENSION", ".yml"),
+    ConfigOption("METADATA_FOLDER", "meta"),
+    ConfigOption("BNOTE_SETTINGS_FILE", "boostnote.json"),
+    ConfigOption("TAGS_INDICATOR", "tags: \""),
+)
 
 
 class Config:
-    def __getitem__(self, key, _type=None):
-        kwargs = {"name": key, "default": _defaults.get(key)}
+    def __init__(self, **kwargs):
+        for option in _defaults:
+            setattr(self, option.key, option.value)
 
-        if _type:
-            kwargs["type"] = _type
-
-        return getenv(**kwargs)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
