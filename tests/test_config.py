@@ -1,9 +1,35 @@
+import json
+
 import pytest
 
 from bnb.config import Config, _defaults
 
 
 class TestConfig:
+    content = {
+        "folders": [
+            {
+                "key": "12345",
+                "color": "#F",
+                "name": "Default"
+            },
+            {
+                "key": "67890",
+                "color": "#A",
+                "name": "Programming"
+            }
+        ],
+        "version": "1.0"
+    }
+
+    @pytest.fixture
+    def settings_file_cfg(self, tmp_path):
+        option = next(co for co in _defaults if co.name == "BNOTE_SETTINGS_FILE")
+        settings_file = tmp_path / option.value
+        settings_file.write_text(json.dumps(self.content))
+
+        return Config(bnote_settings_file=settings_file)
+
     def test_init_has_options(self):
         cfg = Config()
 
@@ -53,3 +79,24 @@ class TestConfig:
         assert val == "new_value_not_in_defaults"
         assert val != option.value
         assert val != option.default
+
+    def test_reading_bnote_settings_raises_file_not_found_and_stops(self):
+        cfg = Config()
+
+        with pytest.raises(FileNotFoundError):
+            cfg.read_boostnote_settings()
+
+    def test_reading_bnote_settings_gives_json(self, settings_file_cfg):
+        cfg = settings_file_cfg
+        cfg.read_boostnote_settings()
+
+        assert cfg.bnote_settings == self.content
+
+    def test_getting_folders(self, settings_file_cfg):
+        cfg = settings_file_cfg
+
+        assert not cfg.bnote_settings
+
+        folders = cfg.folders
+
+        assert len(folders) == 2

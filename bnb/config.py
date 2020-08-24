@@ -1,5 +1,13 @@
+import os
+import json
+import logging
+from functools import cached_property
+
 import attr
 from smart_getenv import getenv
+
+
+logger = logging.getLogger(__name__)
 
 
 @attr.s
@@ -41,3 +49,27 @@ class Config:
 
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+        self.bnote_settings = None
+
+    def read_boostnote_settings(self):
+        try:
+            with open(self.bnote_settings_file,) as f:
+                data = json.load(f)
+        except FileNotFoundError as e:
+            msg = "Error: Could not locate the Boostnote Settings File at '{}'"
+            logger.error(msg.format(self.bnote_settings_file))
+            raise e
+
+        self.bnote_settings = data
+        return data
+
+    @cached_property
+    def folders(self):
+        if not self.bnote_settings:
+            self.read_boostnote_settings()
+
+        return {
+            (f["key"], f["name"])
+            for f in self.bnote_settings["folders"]
+        }
