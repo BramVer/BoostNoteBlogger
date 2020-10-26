@@ -1,22 +1,10 @@
-from pathlib import Path
-
 import pytest
 import markdown
 
 from bnb.config import Config
 from bnb.exceptions import BoundsNotFound
 from bnb.extractor import Extractor, ExtractedContent
-
-
-TEST_FILE = "test_file.cson"
-TEST_BNOTE = "boostnote.json"
-TEST_DATA_DIR = Path(__file__).resolve().parent / "data"
-
-
-@pytest.fixture(scope="session")
-def file(self):
-    with open(TEST_DATA_DIR / TEST_FILE) as f:
-        return f.read()
+from . import TEST_FILE, TEST_BNOTE, TEST_DATA_DIR
 
 
 class TestExtractor:
