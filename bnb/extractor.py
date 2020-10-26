@@ -14,7 +14,7 @@ class ExtractedContent:
     metadata = attr.ib()
 
     def _scan_content_for_pattern(self, start, end=None):
-        end = end or self.cfg["YAML_STRING_INDICATOR"]
+        end = end or self.cfg.yaml_string_indicator
         line = next(c for c in self.content if c.startswith(start))
         if not line:
             return
@@ -23,7 +23,7 @@ class ExtractedContent:
 
     @property
     def title(self):
-        title = self._scan_content(self.cfg["TITLE_INDICATOR"])
+        title = self._scan_content(self.cfg.title_indicator)
 
         return title
 
@@ -33,15 +33,11 @@ class ExtractedContent:
 
     @property
     def folder(self):
-        return self._scan_content(self.cfg["FOLDER_INDICATOR"])
+        return self._scan_content(self.cfg.folder_indicator)
 
     @property
     def tags(self):
-        return self._scan_content(self.cfg["TAGS_INDICATOR"])
-
-    @property
-    def links(self):
-        pass
+        return self._scan_content(self.cfg.tags_indicator)
 
 
 class Extractor:
@@ -64,8 +60,8 @@ class Extractor:
 
     def _get_markdown_index_boundaries(self, content):
         try:
-            _from = content.index(self.cfg["MARKDOWN_START"])
-            _to = content.index(self.cfg["MARKDOWN_END"])
+            _from = content.index(self.cfg.markdown_start)
+            _to = content.index(self.cfg.markdown_end)
         except ValueError as verr:
             msg = f"Markdown boundary is missing in content:\n{verr}"
             raise MarkdownBoundsNotFound(msg)
