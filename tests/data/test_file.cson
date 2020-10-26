@@ -1,0 +1,19 @@
+createdAt: "2020-10-26T12:26:31.560Z"
+updatedAt: "2020-10-26T12:27:42.273Z"
+type: "MARKDOWN_NOTE"
+folder: "key_for_folder_one"
+title: "Test Note"
+tags: [
+    "tag_one"
+]
+content: '''
+  # This is a test
+  ## Content
+  ```python
+  import json
+  print("Hello")
+  ```
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "key": "key_for_folder_one",
+      "color": "#30D5C8",
+      "name": "Folder One"
+    },
+    {
+      "key": "key_for_folder_two",
+      "color": "#B013A4",
+      "name": "Folder Two"
+    }
+  ],
+  "version": "1.0"
+}
