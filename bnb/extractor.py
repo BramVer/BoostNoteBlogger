@@ -9,21 +9,22 @@ from bnb.exceptions import MarkdownBoundsNotFound
 @attr.s
 class ExtractedContent:
     path = attr.ib()
-    content = attr.ib()
     markdown = attr.ib()
     metadata = attr.ib()
 
-    def _scan_content_for_pattern(self, start, end=None):
-        end = end or self.cfg.yaml_string_indicator
-        line = next(c for c in self.content if c.startswith(start))
+    cfg = attr.ib(default=attr.Factory(Config))
+
+    def _scan_metadata(self, pattern, closing_pattern=None):
+        closing_pattern = closing_pattern or self.cfg.yaml_string_indicator
+        line = next(c for c in self.metadata if c.startswith(pattern))
         if not line:
             return
 
-        return line.replace(start, "").rstrip(end)
+        return line.replace(pattern, "").rstrip(closing_pattern)
 
     @property
     def title(self):
-        title = self._scan_content(self.cfg.title_indicator)
+        title = self._scan_metadata(self.cfg.title_indicator)
 
         return title
 
@@ -33,11 +34,12 @@ class ExtractedContent:
 
     @property
     def folder(self):
-        return self._scan_content(self.cfg.folder_indicator)
+        folder = self._scan_metadata(self.cfg.folder_indicator)
+        return self.cfg.folders.get(folder)
 
     @property
     def tags(self):
-        return self._scan_content(self.cfg.tags_indicator)
+        return self._scan_metadata(self.cfg.tags_indicator)
 
 
 class Extractor:
@@ -49,9 +51,9 @@ class Extractor:
 
         return ExtractedContent(
             path=path,
-            content=content,
             markdown=self.extract_markdown(content),
             metadata=self.extract_metadata(content),
+            cfg=self.cfg,
         )
 
     def _read_file(self, file):
@@ -73,7 +75,7 @@ class Extractor:
 
         markdown = content[(_from + 1) : _to]
 
-        return [c.lstrip() for c in markdown]
+        return [l.strip() for l in markdown]
 
     def extract_metadata(self, content):
         _from, _to = self._get_markdown_index_boundaries(content)
@@ -81,4 +83,4 @@ class Extractor:
         first_half = content[0:_from]
         second_half = content[(_to + 1) :]
 
-        return json.load(first_half + second_half)
+        return [l.strip() for l in (first_half + second_half)]
