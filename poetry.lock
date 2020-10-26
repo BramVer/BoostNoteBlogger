@@ -141,6 +141,17 @@ six = "*"
 termcolor = "*"
 
 [[package]]
+name = "markdown"
+version = "3.3.3"
+description = "Python implementation of Markdown."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+testing = ["coverage", "pyyaml"]
+
+[[package]]
 name = "mock"
 version = "4.0.2"
 description = "Rolling backport of unittest.mock for all Pythons"
@@ -361,7 +372,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.0"
 python-versions = "^3.8"
-content-hash = "5e4b639202661f93955c639227cec84c23535700ff7ad439102746c5ef9abebc"
+content-hash = "bccccce2854a60e7fb2b9bf4de590de09606432c58d0402a59852cb41e252c4f"
 
 [metadata.files]
 appdirs = [
@@ -441,6 +452,10 @@ cson-to-markdown = [
 ]
 fire = [
     {file = "fire-0.2.1.tar.gz", hash = "sha256:6865fefc6981a713d2ce56a2a2c92c56c729269f74a6cddd6f4b94d16ae084c9"},
+]
+markdown = [
+    {file = "Markdown-3.3.3-py3-none-any.whl", hash = "sha256:c109c15b7dc20a9ac454c9e6025927d44460b85bd039da028d85e2b6d0bcc328"},
+    {file = "Markdown-3.3.3.tar.gz", hash = "sha256:5d9f2b5ca24bc4c7a390d22323ca4bad200368612b5aaa7796babf971d2b2f18"},
 ]
 mock = [
     {file = "mock-4.0.2-py3-none-any.whl", hash = "sha256:3f9b2c0196c60d21838f307f5825a7b86b678cedc58ab9e50a8988187b4d81e0"},
