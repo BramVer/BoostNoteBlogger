@@ -14,13 +14,19 @@ class ExtractedContent:
 
     cfg = attr.ib(default=attr.Factory(Config))
 
-    def _scan_metadata(self, pattern, closing_pattern=None):
-        closing_pattern = closing_pattern or self.cfg.yaml_string_indicator
-        line = next(c for c in self.metadata if c.startswith(pattern))
-        if not line:
-            return
+    def _scan_metadata(self, open_, close_=None, natch_one=True):
+        close_ = close_ or self.cfg.string_in_yaml
 
-        return line.replace(pattern, "").rstrip(closing_pattern)
+        if natch_one:
+            line = next(c for c in self.metadata if c.startswith(open_))
+            return line.replace(open_, "").rstrip(close_)
+
+        start = self.metadata.index(open_)
+        end = self.metadata.index(close_)
+
+        return [
+            l.strip(self.cfg.string_in_yaml) for l in self.metadata[start + 1 : end]
+        ]
 
     @property
     def title(self):
@@ -41,7 +47,9 @@ class ExtractedContent:
 
     @property
     def tags(self):
-        return self._scan_metadata(self.cfg.tags_indicator)
+        return self._scan_metadata(
+            self.cfg.tags_open, self.cfg.tags_close, natch_one=False
+        )
 
 
 class Extractor:
@@ -64,8 +72,8 @@ class Extractor:
 
     def _get_markdown_index_boundaries(self, content):
         try:
-            _from = content.index(self.cfg.markdown_start)
-            _to = content.index(self.cfg.markdown_end)
+            _from = content.index(self.cfg.markdown_open)
+            _to = content.index(self.cfg.markdown_close)
         except ValueError as verr:
             msg = f"Markdown boundary is missing in content:\n{verr}"
             raise MarkdownBoundsNotFound(msg)

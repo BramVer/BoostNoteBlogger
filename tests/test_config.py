@@ -26,7 +26,7 @@ class TestConfig:
     def test_init_has_options(self):
         cfg = Config()
 
-        assert hasattr(cfg, "markdown_start")
+        assert hasattr(cfg, "markdown_open")
         assert hasattr(cfg, "metadata_extension")
 
     @pytest.mark.parametrize("count", (0, 1, 2, 3, 4, 5))
@@ -41,7 +41,7 @@ class TestConfig:
 
     @pytest.mark.parametrize(
         "cfg_name",
-        ("MARKDOWN_START", "MARKDOWN_END", "TAGS_INDICATOR", "BNOTE_SETTINGS_FILE"),
+        ("MARKDOWN_OPEN", "MARKDOWN_CLOSE", "TAGS_OPEN", "BNOTE_SETTINGS_FILE"),
     )
     def test_init_options_get_env_var_as_value(self, cfg_name, monkeypatch):
         monkeypatch.setenv(cfg_name, "New value not in defaults!")

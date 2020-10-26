@@ -27,17 +27,18 @@ class ConfigOption:
 
 # This is purely used to store the default config options
 _defaults = (
-    ConfigOption("MARKDOWN_START", "content: '''\n"),
-    ConfigOption("MARKDOWN_END", "'''\n"),
+    ConfigOption("MARKDOWN_OPEN", "content: '''\n"),
+    ConfigOption("MARKDOWN_CLOSE", "'''\n"),
     ConfigOption("TITLE_INDICATOR", 'title: "'),
     ConfigOption("FOLDER_INDICATOR", 'folder: "'),
-    ConfigOption("YAML_STRING_INDICATOR", '"'),
+    ConfigOption("STRING_IN_YAML", '"'),
     ConfigOption("CSON_EXTENSION", ".cson"),
     ConfigOption("MARKDOWN_EXTENSION", ".md"),
     ConfigOption("METADATA_EXTENSION", ".yml"),
     ConfigOption("METADATA_FOLDER", "meta"),
     ConfigOption("BNOTE_SETTINGS_FILE", "boostnote.json"),
-    ConfigOption("TAGS_INDICATOR", 'tags: "'),
+    ConfigOption("TAGS_OPEN", "tags: ["),
+    ConfigOption("TAGS_CLOSE", "]"),
 )
 
 
