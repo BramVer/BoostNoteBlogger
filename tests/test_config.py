@@ -1,5 +1,6 @@
 import json
 
+import mock
 import pytest
 
 from bnb.config import Config, _defaults
@@ -8,18 +9,10 @@ from bnb.config import Config, _defaults
 class TestConfig:
     content = {
         "folders": [
-            {
-                "key": "12345",
-                "color": "#F",
-                "name": "Default"
-            },
-            {
-                "key": "67890",
-                "color": "#A",
-                "name": "Programming"
-            }
+            {"key": "12345", "color": "#F", "name": "Default"},
+            {"key": "67890", "color": "#A", "name": "Programming"},
         ],
-        "version": "1.0"
+        "version": "1.0",
     }
 
     @pytest.fixture
@@ -46,11 +39,9 @@ class TestConfig:
         assert val == option.default
         assert option.default == option.value
 
-    @pytest.mark.parametrize("cfg_name", (
-        "MARKDOWN_START",
-        "MARKDOWN_END",
-        "TAGS_INDICATOR",
-        "BNOTE_SETTINGS_FILE")
+    @pytest.mark.parametrize(
+        "cfg_name",
+        ("MARKDOWN_START", "MARKDOWN_END", "TAGS_INDICATOR", "BNOTE_SETTINGS_FILE"),
     )
     def test_init_options_get_env_var_as_value(self, cfg_name, monkeypatch):
         monkeypatch.setenv(cfg_name, "New value not in defaults!")
@@ -61,7 +52,6 @@ class TestConfig:
 
         assert val == option.value
         assert option.default != option.value
-
 
     def test_init_can_set_new_options(self):
         cfg = Config(spullekes="dingens")
@@ -92,11 +82,26 @@ class TestConfig:
 
         assert cfg.bnote_settings == self.content
 
-    def test_getting_folders(self, settings_file_cfg):
+    def test_folders_grouped_from_settings(self, settings_file_cfg):
+        folders = settings_file_cfg.folders
+
+        assert len(folders) == 2
+        assert folders[0][0] == self.content["folders"][0]["key"]
+        assert folders[1][1] == self.content["folders"][1]["name"]
+
+    @mock.patch("bnb.config.json.loads")
+    def test_folders_are_cached_when_read(self, mock_loads, settings_file_cfg):
         cfg = settings_file_cfg
+        mock_loads.return_value = self.content
 
         assert not cfg.bnote_settings
+        assert mock_loads.call_count == 0
 
         folders = cfg.folders
 
-        assert len(folders) == 2
+        assert cfg.bnote_settings
+        assert mock_loads.call_count == 1
+
+        folders_two = cfg.folders
+
+        assert mock_loads.call_count == 1
