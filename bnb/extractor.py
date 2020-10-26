@@ -14,10 +14,10 @@ class ExtractedContent:
 
     cfg = attr.ib(default=attr.Factory(Config))
 
-    def _scan_metadata(self, open_, close_=None, natch_one=True):
+    def _scan_metadata(self, open_, close_=None, match_one=True):
         close_ = close_ or self.cfg.string_in_yaml
 
-        if natch_one:
+        if match_one:
             line = next(c for c in self.metadata if c.startswith(open_))
             return line.replace(open_, "").rstrip(close_)
 
@@ -48,7 +48,7 @@ class ExtractedContent:
     @property
     def tags(self):
         return self._scan_metadata(
-            self.cfg.tags_open, self.cfg.tags_close, natch_one=False
+            self.cfg.tags_open, self.cfg.tags_close, match_one=False
         )
 
 
