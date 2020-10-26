@@ -30,7 +30,9 @@ class ExtractedContent:
 
     @property
     def filename(self):
-        return self.title.lower().replace(" ", "_")
+        return "{}{}".format(
+            self.title.lower().replace(" ", "_"), self.cfg.markdown_extension
+        )
 
     @property
     def folder(self):

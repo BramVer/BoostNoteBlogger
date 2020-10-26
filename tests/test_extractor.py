@@ -50,5 +50,5 @@ class TestExtractor:
         assert "## Content" in result.markdown
 
         assert result.title == "Test Note"
-        assert result.filename == "test_note"
+        assert result.filename == "test_note.md"
         assert result.folder == "Folder One"
