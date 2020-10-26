@@ -1,9 +1,13 @@
-import yaml
+import logging
 
+import yaml
 import attr
 import markdown
 
 from bnb.config import Config
+
+
+logger = logging.getLogger(__name__)
 
 
 @attr.s
@@ -39,12 +43,20 @@ class Converter:
         return self._glue.join(lines)
 
     def _convert_markdown(self, content):
+        if not content:
+            logger.warning("Content empty, cannot be converted to markdown!")
+
         return self.md.convert(self._glue_content(content))
 
     def _convert_metadata(self, content):
+        if not content:
+            logger.warning("Content empty, cannot be converted to markdown!")
+
         return yaml.safe_load(self._glue_content(content))
 
     def run(self, extracted_content):
+        logger.info(f"Converting content at {extracted_content.path}")
+
         return ConvertedContent(
             cfg=self.cfg,
             path=extracted_content.path,
