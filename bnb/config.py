@@ -70,4 +70,4 @@ class Config:
         if not self.bnote_settings:
             self.read_boostnote_settings()
 
-        return tuple((f["key"], f["name"]) for f in self.bnote_settings["folders"])
+        return {f["key"]: f["name"] for f in self.bnote_settings["folders"]}

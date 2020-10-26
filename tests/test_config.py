@@ -85,9 +85,14 @@ class TestConfig:
     def test_folders_grouped_from_settings(self, settings_file_cfg):
         folders = settings_file_cfg.folders
 
+        fone_key = self.content["folders"][0]["key"]
+        fone_name = self.content["folders"][0]["name"]
+        ftwo_key = self.content["folders"][1]["key"]
+        ftwo_name = self.content["folders"][1]["name"]
+
         assert len(folders) == 2
-        assert folders[0][0] == self.content["folders"][0]["key"]
-        assert folders[1][1] == self.content["folders"][1]["name"]
+        assert folders[fone_key] == fone_name
+        assert folders[ftwo_key] == ftwo_name
 
     @mock.patch("bnb.config.json.loads")
     def test_folders_are_cached_when_read(self, mock_loads, settings_file_cfg):
