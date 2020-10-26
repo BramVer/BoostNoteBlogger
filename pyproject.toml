@@ -11,6 +11,22 @@ cson-to-markdown = "^0.1.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+autohooks = "^2.2.0"
+
+[tool.autohooks]
+mode = "poetry"
+pre-commit = [
+    "autohooks.plugins.black",
+]
+
+[tool.black]
+target-version = ['py38']
+exclude = '''
+/(
+    \.git
+  | __pycache__
+)/
+'''
 
 [build-system]
 requires = ["poetry>=0.12"]
