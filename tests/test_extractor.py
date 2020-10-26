@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+import markdown
 
 from bnb.config import Config
 from bnb.exceptions import BoundsNotFound
@@ -19,21 +20,16 @@ def file(self):
 
 
 class TestExtractor:
-    def test_it_extracts_properly(self):
+    def test_it_reads_and_extracts_properly(self):
         cfg = Config(bnote_settings_file=TEST_DATA_DIR / TEST_BNOTE)
 
         extractor = Extractor(config=cfg)
-        result = extractor.extract(TEST_DATA_DIR / TEST_FILE)
+        result = extractor.run(TEST_DATA_DIR / TEST_FILE)
 
         assert isinstance(result, ExtractedContent)
         assert result.path == TEST_DATA_DIR / TEST_FILE
-
         assert "## Content" in result.markdown
-
-        assert result.title == "Test Note"
-        assert result.filename == "test_note.md"
-        assert result.folder == "Folder One"
-        assert result.tags == ["tag_one"]
+        assert 'title: "Test Note"' in result.metadata
 
     def test_extracting_missing_markdown_raises(self):
         cfg = Config(
@@ -42,4 +38,4 @@ class TestExtractor:
 
         extractor = Extractor(config=cfg)
         with pytest.raises(BoundsNotFound):
-            extractor.extract(TEST_DATA_DIR / TEST_FILE)
+            extractor.run(TEST_DATA_DIR / TEST_FILE)

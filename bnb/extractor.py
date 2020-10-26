@@ -16,40 +16,20 @@ class ExtractedContent:
     markdown = attr.ib()
     metadata = attr.ib()
 
-    cfg = attr.ib(default=attr.Factory(Config))
-
-    @property
-    def title(self):
-        return self.metadata["title"]
-
-    @property
-    def filename(self):
-        return "{}{}".format(
-            self.title.lower().replace(" ", "_"), self.cfg.markdown_extension
-        )
-
-    @property
-    def folder(self):
-        metafold = self.metadata["folder"]
-        return self.cfg.folders.get(metafold)
-
-    @property
-    def tags(self):
-        return self.metadata["tags"]
-
 
 class Extractor:
+    """Reads the file at path provided and returns relevant lines."""
+
     def __init__(self, config=None):
         self.cfg = config or Config()
 
-    def extract(self, path):
+    def run(self, path):
         content = self._read_file(path)
 
         return ExtractedContent(
             path=path,
             markdown=self.extract_markdown(content),
             metadata=self.extract_metadata(content),
-            cfg=self.cfg,
         )
 
     def _read_file(self, file):
@@ -59,33 +39,29 @@ class Extractor:
 
     def _get_content_boundaries(self, content, open_, close_):
         try:
-            _from = content.index(open_)
-            _to = content.index(close_)
+            from_ = content.index(open_)
+            to_ = content.index(close_)
         except ValueError as verr:
             msg = f"Boundary is missing in text-content:\n{verr}"
             raise BoundsNotFound(msg)
 
-        return _from, _to
+        return from_, to_
 
     def extract_markdown(self, content):
-        open_ = self.cfg.markdown_open
-        close_ = self.cfg.markdown_close
+        from_, to_ = self._get_content_boundaries(
+            content, self.cfg.markdown_open, self.cfg.markdown_close
+        )
 
-        _from, _to = self._get_content_boundaries(content, open_, close_)
-
-        markdown = content[(_from + 1) : _to]
+        markdown = content[(from_ + 1) : to_]
 
         return [l.strip() for l in markdown]
 
     def extract_metadata(self, content):
-        open_ = self.cfg.markdown_open
-        close_ = self.cfg.markdown_close
+        from_, to_ = self._get_content_boundaries(
+            content, self.cfg.markdown_open, self.cfg.markdown_close
+        )
 
-        _from, _to = self._get_content_boundaries(content, open_, close_)
+        meta_start = content[0:from_]
+        meta_end = content[(to_ + 1) :]
 
-        meta_start = content[0:_from]
-        meta_end = content[(_to + 1) :]
-
-        joined = "\n".join(meta_start + meta_end)
-
-        return yaml.safe_load(joined)
+        return [l.strip() for l in (meta_start + meta_end)]
