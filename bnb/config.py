@@ -29,16 +29,10 @@ class ConfigOption:
 _defaults = (
     ConfigOption("MARKDOWN_OPEN", "content: '''\n"),
     ConfigOption("MARKDOWN_CLOSE", "'''\n"),
-    ConfigOption("TITLE_INDICATOR", 'title: "'),
-    ConfigOption("FOLDER_INDICATOR", 'folder: "'),
-    ConfigOption("STRING_IN_YAML", '"'),
-    ConfigOption("CSON_EXTENSION", ".cson"),
     ConfigOption("MARKDOWN_EXTENSION", ".md"),
     ConfigOption("METADATA_EXTENSION", ".yml"),
     ConfigOption("METADATA_FOLDER", "meta"),
     ConfigOption("BNOTE_SETTINGS_FILE", "boostnote.json"),
-    ConfigOption("TAGS_OPEN", "tags: ["),
-    ConfigOption("TAGS_CLOSE", "]"),
 )
 
 

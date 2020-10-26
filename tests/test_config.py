@@ -41,7 +41,12 @@ class TestConfig:
 
     @pytest.mark.parametrize(
         "cfg_name",
-        ("MARKDOWN_OPEN", "MARKDOWN_CLOSE", "TAGS_OPEN", "BNOTE_SETTINGS_FILE"),
+        (
+            "MARKDOWN_OPEN",
+            "MARKDOWN_CLOSE",
+            "METADATA_EXTENSION",
+            "BNOTE_SETTINGS_FILE",
+        ),
     )
     def test_init_options_get_env_var_as_value(self, cfg_name, monkeypatch):
         monkeypatch.setenv(cfg_name, "New value not in defaults!")

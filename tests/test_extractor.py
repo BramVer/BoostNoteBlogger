@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from bnb.config import Config
+from bnb.exceptions import BoundsNotFound
 from bnb.extractor import Extractor, ExtractedContent
 
 
@@ -17,32 +18,12 @@ def file(self):
         return f.read()
 
 
-# class TestExtractedContent:
-#     @pytest.fixture
-#     def metadata(self):
-#         return (
-#             'createdAt: "2020-10-26T12:26:31.560Z"\n',
-#             'updatedAt: "2020-10-26T12:27:42.273Z"\n',
-#             'type: "MARKDOWN_NOTE"\n',
-#             'folder: "key_for_folder_one"\n',
-#             'title: "Test Note"\n',
-#             'tags: [\n',
-#             '\t'
-
-#         )
-
-#     def test_it_extracts_all_parts(self, metadata):
-#         markdown = "# This is a markdown file\n## Subtitle\nWow cool"
-#         path = "path/path"
-#         ec = ExtractedContent()
-
-
 class TestExtractor:
     def test_it_extracts_properly(self):
         cfg = Config(bnote_settings_file=TEST_DATA_DIR / TEST_BNOTE)
 
         extractor = Extractor(config=cfg)
-        result = extractor.run(TEST_DATA_DIR / TEST_FILE)
+        result = extractor.extract(TEST_DATA_DIR / TEST_FILE)
 
         assert isinstance(result, ExtractedContent)
         assert result.path == TEST_DATA_DIR / TEST_FILE
@@ -53,3 +34,12 @@ class TestExtractor:
         assert result.filename == "test_note.md"
         assert result.folder == "Folder One"
         assert result.tags == ["tag_one"]
+
+    def test_extracting_missing_markdown_raises(self):
+        cfg = Config(
+            markdown_open="beep-beep", bnote_settings_file=TEST_DATA_DIR / TEST_BNOTE
+        )
+
+        extractor = Extractor(config=cfg)
+        with pytest.raises(BoundsNotFound):
+            extractor.extract(TEST_DATA_DIR / TEST_FILE)

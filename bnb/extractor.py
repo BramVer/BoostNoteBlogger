@@ -1,9 +1,13 @@
-import json
+import yaml
+import logging
 
 import attr
 
 from bnb.config import Config
-from bnb.exceptions import MarkdownBoundsNotFound
+from bnb.exceptions import BoundsNotFound
+
+
+logger = logging.getLogger(__name__)
 
 
 @attr.s
@@ -14,25 +18,9 @@ class ExtractedContent:
 
     cfg = attr.ib(default=attr.Factory(Config))
 
-    def _scan_metadata(self, open_, close_=None, match_one=True):
-        close_ = close_ or self.cfg.string_in_yaml
-
-        if match_one:
-            line = next(c for c in self.metadata if c.startswith(open_))
-            return line.replace(open_, "").rstrip(close_)
-
-        start = self.metadata.index(open_)
-        end = self.metadata.index(close_)
-
-        return [
-            l.strip(self.cfg.string_in_yaml) for l in self.metadata[start + 1 : end]
-        ]
-
     @property
     def title(self):
-        title = self._scan_metadata(self.cfg.title_indicator)
-
-        return title
+        return self.metadata["title"]
 
     @property
     def filename(self):
@@ -42,21 +30,19 @@ class ExtractedContent:
 
     @property
     def folder(self):
-        folder = self._scan_metadata(self.cfg.folder_indicator)
-        return self.cfg.folders.get(folder)
+        metafold = self.metadata["folder"]
+        return self.cfg.folders.get(metafold)
 
     @property
     def tags(self):
-        return self._scan_metadata(
-            self.cfg.tags_open, self.cfg.tags_close, match_one=False
-        )
+        return self.metadata["tags"]
 
 
 class Extractor:
     def __init__(self, config=None):
         self.cfg = config or Config()
 
-    def run(self, path):
+    def extract(self, path):
         content = self._read_file(path)
 
         return ExtractedContent(
@@ -67,30 +53,39 @@ class Extractor:
         )
 
     def _read_file(self, file):
+        logger.info(f"Reading file at: {file}")
         with open(file, "r") as f:
             return f.readlines()
 
-    def _get_markdown_index_boundaries(self, content):
+    def _get_content_boundaries(self, content, open_, close_):
         try:
-            _from = content.index(self.cfg.markdown_open)
-            _to = content.index(self.cfg.markdown_close)
+            _from = content.index(open_)
+            _to = content.index(close_)
         except ValueError as verr:
-            msg = f"Markdown boundary is missing in content:\n{verr}"
-            raise MarkdownBoundsNotFound(msg)
+            msg = f"Boundary is missing in text-content:\n{verr}"
+            raise BoundsNotFound(msg)
 
         return _from, _to
 
     def extract_markdown(self, content):
-        _from, _to = self._get_markdown_index_boundaries(content)
+        open_ = self.cfg.markdown_open
+        close_ = self.cfg.markdown_close
+
+        _from, _to = self._get_content_boundaries(content, open_, close_)
 
         markdown = content[(_from + 1) : _to]
 
         return [l.strip() for l in markdown]
 
     def extract_metadata(self, content):
-        _from, _to = self._get_markdown_index_boundaries(content)
+        open_ = self.cfg.markdown_open
+        close_ = self.cfg.markdown_close
 
-        first_half = content[0:_from]
-        second_half = content[(_to + 1) :]
+        _from, _to = self._get_content_boundaries(content, open_, close_)
 
-        return [l.strip() for l in (first_half + second_half)]
+        meta_start = content[0:_from]
+        meta_end = content[(_to + 1) :]
+
+        joined = "\n".join(meta_start + meta_end)
+
+        return yaml.safe_load(joined)
