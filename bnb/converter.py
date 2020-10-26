@@ -19,12 +19,6 @@ class ConvertedContent:
         return self.metadata["title"]
 
     @property
-    def filename(self):
-        return "{}{}".format(
-            self.title.lower().replace(" ", "_"), self.cfg.markdown_extension
-        )
-
-    @property
     def folder(self):
         metafold = self.metadata["folder"]
         return self.cfg.folders.get(metafold)

@@ -12,13 +12,17 @@ class TestConverter:
         converter = Converter(cfg)
 
         extr_content = extractor.run(fpath)
-        conv_content = converter.run(extr_content)
+        content = converter.run(extr_content)
 
-        markdown = conv_content.markdown
-        metadata = conv_content.metadata
+        markdown = content.markdown
+        metadata = content.metadata
 
         assert isinstance(markdown, str)
         assert isinstance(metadata, dict)
 
         assert "<h1>This is a test</h1>" in markdown
         assert "<code>python\nimport json" in markdown
+
+        assert content.title == "Test Note"
+        assert content.folder == "Folder One"
+        assert content.tags == ["tag_one"]
