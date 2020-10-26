@@ -19,7 +19,6 @@ class ConfigOption:
     @property
     def key(self):
         return self.name.lower()
-    
 
     @property
     def value(self):
@@ -30,15 +29,15 @@ class ConfigOption:
 _defaults = (
     ConfigOption("MARKDOWN_START", "content: '''"),
     ConfigOption("MARKDOWN_END", "'''"),
-    ConfigOption("TITLE_INDICATOR", "title: \""),
-    ConfigOption("FOLDER_INDICATOR", "folder: \""),
-    ConfigOption("YAML_STRING_INDICATOR", "\""),
+    ConfigOption("TITLE_INDICATOR", 'title: "'),
+    ConfigOption("FOLDER_INDICATOR", 'folder: "'),
+    ConfigOption("YAML_STRING_INDICATOR", '"'),
     ConfigOption("CSON_EXTENSION", ".cson"),
     ConfigOption("MARKDOWN_EXTENSION", ".md"),
     ConfigOption("METADATA_EXTENSION", ".yml"),
     ConfigOption("METADATA_FOLDER", "meta"),
     ConfigOption("BNOTE_SETTINGS_FILE", "boostnote.json"),
-    ConfigOption("TAGS_INDICATOR", "tags: \""),
+    ConfigOption("TAGS_INDICATOR", 'tags: "'),
 )
 
 
@@ -54,7 +53,9 @@ class Config:
 
     def read_boostnote_settings(self):
         try:
-            with open(self.bnote_settings_file,) as f:
+            with open(
+                self.bnote_settings_file,
+            ) as f:
                 data = json.load(f)
         except FileNotFoundError as e:
             msg = "Error: Could not locate the Boostnote Settings File at '{}'"
@@ -69,7 +70,4 @@ class Config:
         if not self.bnote_settings:
             self.read_boostnote_settings()
 
-        return {
-            (f["key"], f["name"])
-            for f in self.bnote_settings["folders"]
-        }
+        return tuple((f["key"], f["name"]) for f in self.bnote_settings["folders"])
