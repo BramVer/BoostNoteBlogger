@@ -27,8 +27,8 @@ class ConfigOption:
 
 # This is purely used to store the default config options
 _defaults = (
-    ConfigOption("MARKDOWN_START", "content: '''"),
-    ConfigOption("MARKDOWN_END", "'''"),
+    ConfigOption("MARKDOWN_START", "content: '''\n"),
+    ConfigOption("MARKDOWN_END", "'''\n"),
     ConfigOption("TITLE_INDICATOR", 'title: "'),
     ConfigOption("FOLDER_INDICATOR", 'folder: "'),
     ConfigOption("YAML_STRING_INDICATOR", '"'),
