@@ -38,7 +38,7 @@ def file(self):
 
 
 class TestExtractor:
-    def test_it_extracts_all_parts(self):
+    def test_it_extracts_properly(self):
         cfg = Config(bnote_settings_file=TEST_DATA_DIR / TEST_BNOTE)
 
         extractor = Extractor(config=cfg)
@@ -52,3 +52,4 @@ class TestExtractor:
         assert result.title == "Test Note"
         assert result.filename == "test_note.md"
         assert result.folder == "Folder One"
+        assert result.tags == ["tag_one"]
