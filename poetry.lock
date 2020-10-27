@@ -289,6 +289,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
+name = "smart-getenv"
+version = "1.1.0"
+description = "Wrapper for os.getenv that achieves return values of a specified type"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "toml"
 version = "0.10.1"
 description = "Python Library for Tom's Obvious, Minimal Language"
@@ -331,7 +339,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.0"
 python-versions = "^3.8"
-content-hash = "ed82817968af9475a8e16c91792c9f29e3b38eb9e8bfbacc0f5c4ddc50820fe4"
+content-hash = "1683c1628e52b510f77d53e15f574657b5caea94ae55724e721cd72ce8030be4"
 
 [metadata.files]
 appdirs = [
@@ -502,6 +510,9 @@ regex = [
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
     {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
+]
+smart-getenv = [
+    {file = "smart-getenv-1.1.0.tar.gz", hash = "sha256:8e23c0451c2aef3982137f646aebde2fb67f6b106bc57343bf58d615d663eae9"},
 ]
 toml = [
     {file = "toml-0.10.1-py2.py3-none-any.whl", hash = "sha256:bda89d5935c2eac546d648028b9901107a595863cb36bae0c73ac804a9b4ce88"},
