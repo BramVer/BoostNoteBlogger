@@ -50,7 +50,7 @@ class Converter:
 
     def _convert_metadata(self, content):
         if not content:
-            logger.warning("Content empty, cannot be converted to markdown!")
+            logger.warning("Content empty, cannot be converted to metadata!")
 
         return yaml.safe_load(self._glue_content(content))
 

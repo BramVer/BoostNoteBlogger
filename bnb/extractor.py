@@ -32,9 +32,9 @@ class Extractor:
             metadata=self.extract_metadata(content),
         )
 
-    def _read_file(self, file):
-        logger.info(f"Reading file at: {file}")
-        with open(file, "r") as f:
+    def _read_file(self, fpath):
+        logger.info(f"Reading file at: {fpath}")
+        with open(fpath, "r") as f:
             return f.readlines()
 
     def _get_content_boundaries(self, content, open_, close_):
