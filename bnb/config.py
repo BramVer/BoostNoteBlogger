@@ -31,6 +31,7 @@ _defaults = (
     ConfigOption("MARKDOWN_CLOSE", "'''\n"),
     ConfigOption("MARKDOWN_EXTENSION", ".md"),
     ConfigOption("METADATA_EXTENSION", ".yml"),
+    ConfigOption("CSON_EXTENSION", ".cson"),
     ConfigOption("METADATA_FOLDER", "meta"),
     ConfigOption("BNOTE_SETTINGS_FILE", "boostnote.json"),
 )
