@@ -14,9 +14,13 @@ class Scanner:
 
     def _scan_path(self, path):
         pattern = f"*{self.cfg.cson_extension}"
-        return Path(path).rglob(pattern)
+        files = list(Path(path).rglob(pattern))
+
+        logger.info(f"{len(files)} files found.")
+
+        return files
 
     def run(self, path):
-        logger.info(f"Scanning for files at {path}")
+        logger.info(f"Scanning for files at {path}.")
 
-        return list(self._scan_path(path))
+        return self._scan_path(path)
