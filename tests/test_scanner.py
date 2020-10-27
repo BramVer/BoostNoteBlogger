@@ -8,19 +8,6 @@ class TestScanner:
     def scanner(self, cfg):
         return Scanner(cfg)
 
-    @pytest.fixture
-    def base_dir(self, tmpdir):
-        tmpdir.mkdir("subfolder").mkdir("subbestfolder")
-        for i in range(10):
-            file = tmpdir.join("subfolder", f"file_{i}.cson")
-            file.write("h")
-
-        for i in range(5):
-            file = tmpdir.join("subfolder", "subbestfolder", f"file_{i}.cson")
-            file.write("hh")
-
-        return tmpdir
-
     def test_it_can_run(self, scanner, tmp_path):
         assert hasattr(scanner, "run")
 
