@@ -22,13 +22,13 @@ def cfg():
 
 @pytest.fixture
 def base_dir(tmpdir, file):
-    tmpdir.mkdir("subfolder").mkdir("subbestfolder")
+    tmpdir.mkdir("notes").mkdir("subbestfolder")
     for i in range(10):
-        file = tmpdir.join("subfolder", f"file_{i}.cson")
+        file = tmpdir.join("notes", f"file_{i}.cson")
         file.write(file)
 
     for i in range(5):
-        file = tmpdir.join("subfolder", "subbestfolder", f"file_{i}.cson")
+        file = tmpdir.join("notes", "subbestfolder", f"file_{i}.cson")
         file.write(file)
 
     return tmpdir

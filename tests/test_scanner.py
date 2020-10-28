@@ -18,5 +18,5 @@ class TestScanner:
         result = scanner.run(base_dir)
 
         assert len(result) == 15
-        assert len([r for r in result if "subfolder" in str(r)]) == 15
+        assert len([r for r in result if "notes" in str(r)]) == 15
         assert len([r for r in result if "subbestfolder" in str(r)]) == 5
