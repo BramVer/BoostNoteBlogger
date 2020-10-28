@@ -1,16 +1,24 @@
 import os
+import logging
 from pathlib import Path
 
 from bnb.config import Config
 from bnb.exceptions import PathConstructionError
 
 
+logger = logging.getLogger(__name__)
+
+
 class Writer:
+    """Builds new path and writes content to file."""
+
     def __init__(self, config=None):
         self.cfg = config or Config()
 
     def _create_if_not_present(self, path):
         if not os.path.exists(path.parent):
+            msg = f"Creating directories {path.parent}."
+            logger.info(msg)
             os.makedirs(path.parent)
 
     def _create_file(self, path, content):
@@ -29,6 +37,5 @@ class Writer:
         return Path(*parts[:notes]).joinpath(injection, folder, fname)
 
     def run(self, converted_content):
-        # write
         path = self._construct_new_path(converted_content)
         self._create_file(path, converted_content.content)
