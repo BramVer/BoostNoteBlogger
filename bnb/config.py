@@ -6,6 +6,8 @@ from functools import cached_property
 import attr
 from smart_getenv import getenv
 
+from bnb.exceptions import FolderCouldNotBeMapped
+
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +34,10 @@ _defaults = (
     ConfigOption("MARKDOWN_EXTENSION", ".md"),
     ConfigOption("METADATA_EXTENSION", ".yml"),
     ConfigOption("CSON_EXTENSION", ".cson"),
+    ConfigOption("OUTPUT_EXTENSION", ".html"),
     ConfigOption("METADATA_FOLDER", "meta"),
+    ConfigOption("OUTPUT_FOLDER", "build"),
+    ConfigOption("NOTES_FOLDER", "notes"),
     ConfigOption("BNOTE_SETTINGS_FILE", "boostnote.json"),
 )
 
@@ -53,10 +58,10 @@ class Config:
                 self.bnote_settings_file,
             ) as f:
                 data = json.load(f)
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             msg = "Error: Could not locate the Boostnote Settings File at '{}'"
             logger.error(msg.format(self.bnote_settings_file))
-            raise e
+            raise FolderCouldNotBeMapped(msg)
 
         self.bnote_settings = data
         return data
@@ -67,3 +72,8 @@ class Config:
             self.read_boostnote_settings()
 
         return {f["key"]: f["name"] for f in self.bnote_settings["folders"]}
+
+    def setup(self):
+        # Create necessary folders
+        # Create index.html
+        pass

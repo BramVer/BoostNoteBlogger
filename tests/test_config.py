@@ -4,6 +4,7 @@ import mock
 import pytest
 
 from bnb.config import Config, _defaults
+from bnb.exceptions import FolderCouldNotBeMapped
 
 
 class TestConfig:
@@ -75,10 +76,10 @@ class TestConfig:
         assert val != option.value
         assert val != option.default
 
-    def test_reading_bnote_settings_raises_file_not_found_and_stops(self):
+    def test_reading_bnote_settings_raises_folder_could_not_be_mapped(self):
         cfg = Config()
 
-        with pytest.raises(FileNotFoundError):
+        with pytest.raises(FolderCouldNotBeMapped):
             cfg.read_boostnote_settings()
 
     def test_reading_bnote_settings_gives_json(self, settings_file_cfg):
@@ -99,19 +100,19 @@ class TestConfig:
         assert folders[fone_key] == fone_name
         assert folders[ftwo_key] == ftwo_name
 
-    @mock.patch("bnb.config.json.loads")
-    def test_folders_are_cached_when_read(self, mock_loads, settings_file_cfg):
+    @mock.patch("bnb.config.json.load")
+    def test_folders_are_cached_when_read(self, mock_load, settings_file_cfg):
         cfg = settings_file_cfg
-        mock_loads.return_value = self.content
+        mock_load.return_value = self.content
 
         assert not cfg.bnote_settings
-        assert mock_loads.call_count == 0
+        assert mock_load.call_count == 0
 
         folders = cfg.folders
 
         assert cfg.bnote_settings
-        assert mock_loads.call_count == 1
+        assert mock_load.call_count == 1
 
         folders_two = cfg.folders
 
-        assert mock_loads.call_count == 1
+        assert mock_load.call_count == 1
