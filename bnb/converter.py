@@ -6,6 +6,7 @@ import attr
 import markdown
 
 from bnb.config import Config
+from bnb.exceptions import FolderCouldNotBeMapped
 
 
 logger = logging.getLogger(__name__)
@@ -26,12 +27,17 @@ class ConvertedContent:
     @property
     def filename(self):
         lowered = self.title.lower().replace(" ", "")
-        return f"{lowered}.{self.cfg.output_extension}"
+        return f"{lowered}{self.cfg.output_extension}"
 
     @property
     def folder(self):
-        metafold = self.metadata["folder"]
-        return self.cfg.folders.get(metafold)
+        metafold = self.metadata.get("folder")
+
+        if folder := self.cfg.folders.get(metafold):
+            return folder
+
+        msg = f"Key {metafold} could not be found" f" in mapping {self.cfg.folders}"
+        raise FolderCouldNotBeMapped(msg)
 
     @property
     def tags(self):

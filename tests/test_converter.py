@@ -5,6 +5,8 @@ import pytest
 import markdown
 from yaml.parser import ParserError
 
+from bnb.config import Config
+from bnb.exceptions import FolderCouldNotBeMapped
 from bnb.extractor import Extractor, ExtractedContent
 from bnb.converter import Converter, ConvertedContent
 
@@ -38,6 +40,31 @@ class TestConvertedContent:
 
         attr = getattr(content, field)
         assert isinstance(attr, type_)
+
+    def test_it_raises_specific_when_folder_not_found(self, cfg):
+        content = ConvertedContent(
+            cfg=cfg, path="/", content="", metadata={"folder": "key_for_folder_one"}
+        )
+
+        # Config uses provided bnote_settings_file in tests/data, all good
+        assert content.folder
+
+        # Config without mapping file
+        new_cfg = Config()
+        content.cfg = new_cfg
+
+        with pytest.raises(FolderCouldNotBeMapped):
+            content.folder
+
+        # Remove folder from metadata so nothing can be found
+        content.cfg = cfg
+        content.metadata = {}
+        with pytest.raises(FolderCouldNotBeMapped):
+            content.folder
+
+        content.metadata["folder"] = "THIS FOLDER DOES NOT EXIST"
+        with pytest.raises(FolderCouldNotBeMapped):
+            content.folder
 
 
 class TestConverter:
