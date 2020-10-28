@@ -1,4 +1,5 @@
 import logging
+import pathlib
 
 import yaml
 import attr
@@ -12,15 +13,20 @@ logger = logging.getLogger(__name__)
 
 @attr.s
 class ConvertedContent:
-    path = attr.ib()
-    markdown = attr.ib(type=str)
-    metadata = attr.ib(type=dict)
+    path = attr.ib(converter=pathlib.Path)
+    content = attr.ib(converter=str)
+    metadata = attr.ib(converter=dict)
 
     cfg = attr.ib(default=attr.Factory(Config))
 
     @property
     def title(self):
         return self.metadata["title"]
+
+    @property
+    def filename(self):
+        lowered = self.title.lower().replace(" ", "")
+        return f"{lowered}.{self.cfg.output_extension}"
 
     @property
     def folder(self):
@@ -60,6 +66,6 @@ class Converter:
         return ConvertedContent(
             cfg=self.cfg,
             path=extracted_content.path,
-            markdown=self._convert_markdown(extracted_content.markdown),
+            content=self._convert_markdown(extracted_content.markdown),
             metadata=self._convert_metadata(extracted_content.metadata),
         )

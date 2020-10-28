@@ -1,3 +1,5 @@
+import pathlib
+
 import mock
 import pytest
 import markdown
@@ -7,16 +9,47 @@ from bnb.extractor import Extractor, ExtractedContent
 from bnb.converter import Converter, ConvertedContent
 
 
+class TestConvertedContent:
+    @pytest.mark.parametrize(
+        "field, type_, value",
+        [
+            ["path", pathlib.Path, pathlib.PosixPath("data")],
+            ["path", pathlib.Path, "data"],
+            ["path", pathlib.Path, ""],
+            ["path", pathlib.Path, "/"],
+            ["path", pathlib.Path, ":dabbing_on_the_haters:"],
+            ["content", str, 8],
+            ["content", str, None],
+            ["content", str, "<h1>Hi</h1>"],
+            ["metadata", dict, {}],
+            ["metadata", dict, {1: 2}],
+            ["metadata", dict, []],
+        ],
+    )
+    def test_it_converts_input_to_type(self, field, type_, value):
+        kwargs = {
+            "path": "",
+            "content": [],
+            "metadata": {},
+        }
+
+        kwargs[field] = value
+        content = ConvertedContent(**kwargs)
+
+        attr = getattr(content, field)
+        assert isinstance(attr, type_)
+
+
 class TestConverter:
     def test_it_turns_extracted_into_converted_content(self, cfg, fpath):
         extractor = Extractor(cfg)
         converter = Converter(cfg)
 
         extr_content = extractor.run(fpath)
-        content = converter.run(extr_content)
+        conv_content = converter.run(extr_content)
 
-        markdown = content.markdown
-        metadata = content.metadata
+        markdown = conv_content.content
+        metadata = conv_content.metadata
 
         assert isinstance(markdown, str)
         assert isinstance(metadata, dict)
@@ -24,9 +57,9 @@ class TestConverter:
         assert "<h1>This is a test</h1>" in markdown
         assert "<code>python\nimport json" in markdown
 
-        assert content.title == "Test Note"
-        assert content.folder == "Folder One"
-        assert content.tags == ["tag_one"]
+        assert conv_content.title == "Test Note"
+        assert conv_content.folder == "Folder One"
+        assert conv_content.tags == ["tag_one"]
 
     def test_it_raises_on_incorrect_data(self, cfg, fpath):
         incorrect_data = {
