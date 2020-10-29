@@ -30,6 +30,10 @@ class ConvertedContent:
         return f"{lowered}{self.cfg.output_extension}"
 
     @property
+    def tags(self):
+        return self.metadata["tags"]
+
+    @property
     def folder(self):
         metafold = self.metadata.get("folder")
 
@@ -40,8 +44,14 @@ class ConvertedContent:
         raise FolderCouldNotBeMapped(msg)
 
     @property
-    def tags(self):
-        return self.metadata["tags"]
+    def md_link(self):
+        link = f"[{self.title}]" f"({self.cfg.base_url}/{self.folder}/{self.filename})"
+        if self.tags:
+            link = f"{link}**{' - '.join(t for t in self.tags)}**"
+        return markdown.Markdown(output_format="html").convert(link)
+
+    def __str__(self):
+        return f"{self.folder} - {self.title} (tags: {self.tags})"
 
 
 class Converter:
@@ -51,7 +61,7 @@ class Converter:
 
     def __init__(self, config=None):
         self.cfg = config or Config()
-        self.md = markdown.Markdown(output_format="html")
+        self.md = markdown.Markdown(output_format="html", extensions=["fenced_code"])
 
     def _glue_content(self, lines):
         return self._glue.join(lines)
@@ -60,7 +70,8 @@ class Converter:
         if not content:
             logger.warning("Content empty, cannot be converted to markdown!")
 
-        return self.md.convert(self._glue_content(content))
+        # return self.md.convert(self._glue_content(content))
+        return self.md.convert("".join(content))
 
     def _convert_metadata(self, content):
         if not content:
