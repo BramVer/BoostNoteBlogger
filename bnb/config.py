@@ -35,6 +35,7 @@ _defaults = (
     ConfigOption("METADATA_EXTENSION", ".yml"),
     ConfigOption("CSON_EXTENSION", ".cson"),
     ConfigOption("OUTPUT_EXTENSION", ".html"),
+    ConfigOption("INDEX_FILE", "index.html"),
     ConfigOption("METADATA_FOLDER", "meta"),
     ConfigOption("OUTPUT_FOLDER", "build"),
     ConfigOption("NOTES_FOLDER", "notes"),
@@ -72,8 +73,3 @@ class Config:
             self.read_boostnote_settings()
 
         return {f["key"]: f["name"] for f in self.bnote_settings["folders"]}
-
-    def setup(self):
-        # Create necessary folders
-        # Create index.html
-        pass
