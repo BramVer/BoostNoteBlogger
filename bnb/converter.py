@@ -26,7 +26,7 @@ class ConvertedContent:
 
     @property
     def filename(self):
-        lowered = self.title.lower().replace(" ", "")
+        lowered = self.title.lower().replace(" ", "_")
         return f"{lowered}{self.cfg.output_extension}"
 
     @property
@@ -45,6 +45,8 @@ class ConvertedContent:
 
 
 class Converter:
+    """Turns list of string into dict and html-markdown."""
+
     _glue = "\n"
 
     def __init__(self, config=None):
