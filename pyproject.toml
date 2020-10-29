@@ -19,6 +19,9 @@ autohooks-plugin-black = "^1.2.0"
 pytest-cov = "^2.10.1"
 mock = "^4.0.2"
 
+[tool.poetry.scripts]
+bnb = 'bnb.blogger:cli'
+
 [tool.autohooks]
 mode = "poetry"
 pre-commit = [
