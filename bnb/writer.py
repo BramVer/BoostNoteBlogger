@@ -3,7 +3,6 @@ import logging
 from pathlib import Path
 
 from bnb.config import Config
-from bnb.exceptions import PathConstructionError
 
 
 logger = logging.getLogger(__name__)

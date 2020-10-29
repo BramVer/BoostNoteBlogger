@@ -6,7 +6,6 @@ import pytest
 from bnb.config import Config
 from bnb.writer import Writer
 from bnb.converter import ConvertedContent
-from bnb.exceptions import PathConstructionError
 
 
 class TestWriter:
