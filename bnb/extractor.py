@@ -54,7 +54,7 @@ class Extractor:
 
         markdown = content[(from_ + 1) : to_]
 
-        return [l.strip() for l in markdown]
+        return [l[2:] for l in markdown]
 
     def extract_metadata(self, content):
         from_, to_ = self._get_content_boundaries(
