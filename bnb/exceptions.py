@@ -6,5 +6,5 @@ class FolderCouldNotBeMapped(Exception):
     pass
 
 
-class PathConstructionError(Exception):
+class CofigurationError(Exception):
     pass
