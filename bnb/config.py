@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+from pathlib import Path
 from functools import cached_property
 
 import attr
@@ -39,29 +40,35 @@ _defaults = (
     ConfigOption("METADATA_FOLDER", "meta"),
     ConfigOption("OUTPUT_FOLDER", "build"),
     ConfigOption("NOTES_FOLDER", "notes"),
+    ConfigOption("HOME_FOLDER", "/home/bram/dev/blog"),
+    ConfigOption("HEADER_FILE", "assets/header.html"),
+    ConfigOption("SIDEBAR_FILE", "assets/sidebar.html"),
+    ConfigOption("FOOTER_FILE", "assets/footer.html"),
+    ConfigOption("BASE_URL", "https://bramver.github.io"),
     ConfigOption("BNOTE_SETTINGS_FILE", "boostnote.json"),
 )
 
 
 class Config:
-    def __init__(self, **kwargs):
+    def __init__(self, home=None, bnote_settings=None, **kwargs):
         for option in _defaults:
             setattr(self, option.key, option.value)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-        self.bnote_settings = None
+        self.home = Path(home or self.home_folder)
+        self.bnote_settings = bnote_settings
 
     def read_boostnote_settings(self):
+        path = Path(self.home).joinpath(self.bnote_settings_file)
+
         try:
-            with open(
-                self.bnote_settings_file,
-            ) as f:
+            with open(path) as f:
                 data = json.load(f)
         except FileNotFoundError:
             msg = "Error: Could not locate the Boostnote Settings File at '{}'"
-            logger.error(msg.format(self.bnote_settings_file))
+            logger.error(msg.format(path))
             raise FolderCouldNotBeMapped(msg)
 
         self.bnote_settings = data
