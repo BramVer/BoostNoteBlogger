@@ -27,13 +27,17 @@ class Writer:
 
     def _construct_new_path(self, conv_content):
         injection = self.cfg.output_folder
-        fname = conv_content.filename
         folder = conv_content.folder
+        fname = conv_content.filename
+
+        subpath = (injection, folder, fname)
+        if conv_content.is_index:
+            subpath = (fname,)
 
         parts = conv_content.path.absolute().parts
         notes = parts.index(self.cfg.notes_folder)
 
-        return Path(*parts[:notes]).joinpath(injection, folder, fname)
+        return Path(*parts[:notes]).joinpath(*subpath)
 
     def run(self, converted_content):
         path = self._construct_new_path(converted_content)
