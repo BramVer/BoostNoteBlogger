@@ -44,11 +44,25 @@ class ConvertedContent:
         raise FolderCouldNotBeMapped(msg)
 
     @property
+    def is_index(self):
+        return (
+            self.folder == self.cfg.index_folder
+            and self.filename == self.cfg.index_file
+        )
+
+    @property
     def md_link(self):
-        link = f"[{self.title}]" f"({self.cfg.base_url}/{self.folder}/{self.filename})"
-        if self.tags:
-            link = f"{link}**{' - '.join(t for t in self.tags)}**"
-        return markdown.Markdown(output_format="html").convert(link)
+        md = markdown.Markdown(output_format="html")
+
+        title = f"[{self.folder} - {self.title}]"
+        parts = [self.cfg.base_url, self.filename]
+        if not self.is_index:
+            parts[1:1] = [self.cfg.output_folder, self.folder]
+
+        link = f"({'/'.join(parts)})"
+        tags = f"**{' - '.join([t for t in self.tags])}**"
+
+        return md.convert(f"{title}{link}{tags if self.tags else ''}")
 
     def __str__(self):
         return f"{self.folder} - {self.title} (tags: {self.tags})"
