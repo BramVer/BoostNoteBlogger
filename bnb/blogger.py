@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
 
+import click
 import markdown
 import questionary
 
@@ -14,36 +15,49 @@ from bnb.converter import Converter
 from bnb.exceptions import ConfigurationError
 
 
-def cli():
-    cfg = Config()
+@click.command()
+@click.option("--home", "-h", default=None, type=str)
+@click.option("--automated", "-a", default=True, type=bool)
+def cli(home=None, automated=True):
+    if not home:
+        msg = "Hi there! What folder should we set as the home of your blog?"
+        home = questionary.text(msg, default=Config().home_folder).ask()
 
-    msg = "Hi there! What folder should we set as the home of your blog?"
-    home = questionary.text(msg, default=cfg.home_folder).ask()
-
-    blogger = Blogger(home)
+    cfg = Config(home=home, automated=automated)
+    blogger = Blogger(cfg)
     blogger.run()
+
+    print("All done!")
 
 
 class Blogger:
-    def __init__(self, home, config=None):
-        self.home = Path(home)
-        self.cfg = config or Config(home)
+    def __init__(self, config=None):
+        self.cfg = config or Config()
 
     def _assert_settings_file(self):
-        settings = Path(self.home / self.cfg.bnote_settings_file)
+        settings = self.cfg.home.joinpath(self.cfg.bnote_settings_file)
         if not settings.exists():
-            msg = f"{self.cfg.bnote_settings_file} could not be found at {self.home}."
+            msg = (
+                f"{self.cfg.bnote_settings_file} could not be found at {self.cfg.home}."
+            )
+            raise ConfigurationError(msg)
+
+    def _assert_assets_folder(self):
+        assets = self.cfg.home.joinpath(self.cfg.assets_folder)
+        if not assets.exists():
+            msg = f"No assets folder found at {self.cfg.home}."
             raise ConfigurationError(msg)
 
     def _assert_notes_folder(self):
-        notes = Path(self.home / self.cfg.notes_folder)
+        notes = self.cfg.home.joinpath(self.cfg.notes_folder)
         if not notes.exists():
-            msg = f"No notes folder found at {self.home}."
+            msg = f"No notes folder found at {self.cfg.home}."
             raise ConfigurationError(msg)
 
     def assert_setup(self):
         try:
             self._assert_notes_folder()
+            self._assert_assets_folder()
             self._assert_settings_file()
         except ConfigurationError as e:
             msg = (
@@ -57,7 +71,7 @@ class Blogger:
     def scan_files(self, scanner=None):
         scanner = scanner or Scanner(self.cfg)
 
-        return scanner.run(self.home)
+        return scanner.run(self.cfg.home)
 
     def process_files(self, files, extractor=None, converter=None):
         processed = []
@@ -72,6 +86,9 @@ class Blogger:
         return processed
 
     def confirm_for_conversion(self, files):
+        if self.cfg.automated:
+            return files
+
         msg = f"We found {len(files)} files, deselect to omit."
         choices = [questionary.Choice(f, checked=True) for f in files]
 
@@ -92,8 +109,8 @@ class Blogger:
         mapping = self._get_chronological_file_map(files)
 
         for key, values in mapping.items():
-            links = "\n    * ".join(values)
-            sidebar_md.append(f"## {key}{links}")
+            links = "\n".join([f"* {v}" for v in values])
+            sidebar_md.append(f"## {key}\n{links}")
 
         return markdown.Markdown(output_format="html").convert("\n".join(sidebar_md))
 
